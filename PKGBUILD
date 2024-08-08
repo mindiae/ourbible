@@ -1,11 +1,15 @@
 # Maintainer: Mindia Edisherashvili <mindia.e@aol.com>
-pkgname=ourbible
-pkgver=0.1.0
+pkgname=ourbible-git
+pkgver() {
+  cd "$srcdir/$pkgname"
+  # Get the latest tag and the number of commits since that tag
+  git describe --tags --long --dirty | sed 's/^v//;s/-/+/g'
+}
 pkgrel=1
 epoch=
 pkgdesc="bible viewer app with web interface uses MyBible android app's modules"
 arch=('x86_64')
-url=""
+url="https://github.com/mindiae/ourbible" # Replace with the actual repository URL
 license=('LGPL' 'GPL')
 groups=()
 depends=('sqlite' 'go')
@@ -19,18 +23,22 @@ backup=()
 options=()
 install=
 changelog=
-source=(*)
+source=("git+https://github.com/mindiae/ourbible.git") # Replace with the actual repository URL
 noextract=()
 sha256sums=('SKIP')
-validpgpkeys=()
+
+pkgver() {
+  cd "$srcdir/$pkgname"
+  git describe --tags --long --dirty | sed 's/^v//;s/-/+/g'
+}
 
 build() {
-  cd "$srcdir"
+  cd "$srcdir/$pkgname"
   go build -o build/$pkgname
 }
 
 package() {
-  cd "$srcdir"
+  cd "$srcdir/$pkgname"
   install -Dm755 "build/$pkgname" "$pkgdir/usr/local/bin/$pkgname"
   local target_dir="/usr/local/share/$pkgname"
 
@@ -40,5 +48,4 @@ package() {
   mv "database/"* "$pkgdir/$target_dir/database"
   install -d "$pkgdir/$target_dir/views"
   mv "views/"* "$pkgdir/$target_dir/views"
-
 }
