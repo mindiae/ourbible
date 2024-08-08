@@ -1,0 +1,9 @@
+{{ block "verses" . }} {{ range .Verses }}
+<div class="flex gap-2">
+  <span class="text-nowrap">{{ .Verse }}</span>
+  <span class="w-full">{{ if .Text1 }}{{ .Text1 }}{{ end }}</span>
+  {{ if $.IsSecondModuleExists }}
+  <span class="w-full">{{ if .Text2 }}{{ .Text2 }}{{ end }}</span>
+  {{ end }}
+</div>
+{{ end }} {{ end }}
