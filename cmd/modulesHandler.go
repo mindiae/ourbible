@@ -17,7 +17,7 @@ type InfoRow struct {
 }
 
 func ModulesHandler(c echo.Context) error {
-	directoryPath := filepath.Join(APP_ROOT + "database")
+	directoryPath := filepath.Join(APP_ROOT, "database")
 
 	var modules []map[string]string
 
