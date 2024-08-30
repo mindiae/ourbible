@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=OurBible Bible Viewer
+Comment=Bible Viewer
+Keywords=Text;Bible;Study;
+Exec=ourbible
+Icon=accessories-document-viewer-symbolic
+Terminal=false
+Type=Application
+Categories=Education;
+StartupNotify=true
