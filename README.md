@@ -19,3 +19,7 @@ git clone https://github.com/mindiae/ourbible.git
 cd ourbible
 go run ./cmd
 ```
+
+## running from web interface
+
+Just open http://localhost:42069 on browser after running the application
