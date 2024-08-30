@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	webview "github.com/webview/webview_go"
 )
@@ -18,20 +17,17 @@ func fileExists(path string) bool {
 }
 
 func main() {
-	err := godotenv.Load()
+	executablePath, err := os.Executable()
 	if err != nil {
-		log.Println("No .env file found or error loading it, using default value.")
-	} else {
-		if ROOT, exists := os.LookupEnv("ROOT"); exists {
-			APP_ROOT = ROOT
-		}
+		log.Fatalf("Error getting executable path:", err)
+		return
+	}
+
+	if executablePath == "/usr/local/bin/ourbible" {
+		APP_ROOT = "/usr/local/share/ourbible"
 	}
 
 	e := echo.New()
-
-	if err != nil {
-		log.Fatalf("Failed to initialize templates: %v", err)
-	}
 
 	e.GET("/bible-json/chapter/:module/:book/:chapter", ChapterHandler)
 	e.GET("/bible-json/module", ModulesHandler)
