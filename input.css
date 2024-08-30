@@ -3,3 +3,7 @@
 .j {
   color: firebrick;
 }
+
+[x-cloak] {
+  display: none !important;
+}

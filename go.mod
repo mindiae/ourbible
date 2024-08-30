@@ -1,10 +1,12 @@
-module ourbible
+module github.com/mindiae/o
 
-go 1.22.5
+go 1.23.0
 
 require (
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/webview/webview_go v0.0.0-20240220051247-56f456ca3a43
 )
 
 require (

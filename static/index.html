@@ -1,19 +1,21 @@
-{{ block "index" . }}
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script defer src="/js/persist.min.js"></script>
-    <script defer src="/js/alpine.min.js"></script>
-    <script src="/js/htmx.min.js"></script>
+    <script defer src="js/persist.js"></script>
+    <script defer src="js/alpine.js"></script>
     <title></title>
     <link href="css/bibleviewer.css" rel="stylesheet" />
     <link href="css/fontawesome.css" rel="stylesheet" />
   </head>
 
-  <body>
+  <body
+    x-data="{darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches)}"
+    x-bind:class="{'dark': darkMode}"
+    class="dark:text-white dark:bg-[#333333]"
+  >
     <main
       style="max-width: 70rem; margin-inline: auto"
       class="[&_button]:font-sans [&_button]:text-white [&_button]:border-none font-sans"
@@ -28,6 +30,13 @@
             x-on:click="$dispatch('toggle-modules')"
             x-text="module"
           ></button>
+          <button
+            x-show="!module2"
+            class="bg-gray-800 px-3 !py-[unset]"
+            x-on:click="module2 = modules.find(mod => mod.name != module).name"
+          >
+            <i class="far fa-plus-square"></i>
+          </button>
           <button
             class="bg-gray-800 px-3 !py-[unset] font-bold"
             x-on:click="$dispatch('toggle-books')"
@@ -49,11 +58,15 @@
             <i class="fas fa-arrow-right"></i>
           </button>
           <button
-            x-show="!module2"
+            x-on:click="darkMode = !darkMode"
             class="bg-gray-800 px-3 !py-[unset]"
-            x-on:click="module2 = modules.find(mod => mod != module)"
           >
-            <i class="far fa-plus-square"></i>
+            <span x-show="darkMode">
+              <i class="fas fa-moon"></i>
+            </span>
+            <span x-show="!darkMode">
+              <i class="fas fa-sun"></i>
+            </span>
           </button>
         </div>
 
@@ -65,25 +78,24 @@
               x-text="module2"
             ></button>
             <button
-              class="bg-gray-800 !py-[unset] px-3 font-bold"
-              x-on:click="$dispatch('toggle-books2')"
-              x-text="`${bookstable2?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}`"
-            ></button>
-
-            <button
               class="bg-gray-800 px-3 !py-[unset]"
               x-on:click="module2 = ''"
             >
               <i class="fas fa-times"></i>
             </button>
+            <button
+              class="bg-gray-800 !py-[unset] px-3 font-bold"
+              x-on:click="$dispatch('toggle-books2')"
+              x-text="`${bookstable2?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}`"
+            ></button>
           </div>
         </template>
       </div>
       <div
         x-data="{booksopened: false}"
         x-on:toggle-books.window="booksopened = !booksopened"
-        x-on:module-changed.window="bookstable =await (await fetch(`/api-json/books?m=${module}`)).json()"
-        x-init="bookstable =await (await fetch(`/api-json/books?m=${module}`)).json()"
+        x-on:module-changed.window="bookstable =await (await fetch(`/bible-json/book/${module}`)).json()"
+        x-init="bookstable =await (await fetch(`/bible-json/book/${module}`)).json()"
         class="flex justify-center items-center z-[900] fixed bg-black/20 inset-0"
         x-show="booksopened"
         x-cloak
@@ -91,11 +103,12 @@
         <div
           x-on:click.outside="booksopened = false"
           x-on:click="$dispatch('book-changed')"
-          class="grid w-full h-full gap-px bg-black max-w-96 max-h-96 grid-cols-6"
+          class="grid gap-px bg-black max-w-full max-h-full grid-cols-6"
+          x-bind:style="`height: ${Math.ceil(bookstable.length/6) * 2}rem`"
         >
           <template x-for="book in bookstable" x-key="book.book_number">
             <button
-              class="border font-bold text-nowrap !p-[unset] bg-gray-800"
+              class="border font-bold text-nowrap bg-gray-800"
               x-bind:style="`color: ${book.book_color}`"
               x-text="book.short_name"
               x-on:click="book_number = book.book_number; booksopened = false"
@@ -107,22 +120,24 @@
       <div
         x-data="{books2opened: false}"
         x-on:toggle-books2.window="books2opened = !books2opened"
-        x-on:module2-changed.window="bookstable2 = module2 ? await (await fetch(`/api-json/books?m=${module2}`)).json() : []"
-        x-init="bookstable2 = module2 ? await (await fetch(`/api-json/books?m=${module2}`)).json() : []"
+        x-on:module2-changed.window="bookstable2 = module2 ? await (await fetch(`/bible-json/book/${module2}`)).json() : []"
+        x-init="bookstable2 = module2 ? await (await fetch(`/bible-json/book/${module2}`)).json() : []"
         class="flex fixed z-[900] inset-0 justify-center items-center bg-black/20"
         x-show="books2opened"
         x-cloak
       >
         <div
           x-on:click.outside="books2opened = false"
-          class="bg-black grid grid-cols-6 h-full w-full max-w-96 max-h-96 gap-px"
+          x-on:click="$dispatch('book-changed')"
+          class="bg-black grid grid-cols-6 max-w-full max-h-full gap-px"
+          x-bind:style="`height: ${Math.ceil(bookstable2.length/6) * 2}rem`"
         >
           <template x-for="book in bookstable2" x-key="book.book_number">
             <button
-              class="border text-nowrap !p-[unset] bg-gray-800"
+              class="border text-nowrap bg-gray-800"
               x-bind:style="`color: ${book.book_color}`"
               x-text="book.short_name"
-              x-on:click="book_number = book.book_number; book2opened = false"
+              x-on:click="book_number = book.book_number; books2opened = false"
             ></button>
           </template>
         </div>
@@ -136,12 +151,12 @@
       >
         <div
           x-on:click.outside="chaptersopened = false"
-          class="grid justify-stretch w-full h-full gap-px bg-black max-w-[40rem] max-h-[40rem] grid-cols-6"
-          x-bind:style="`grid-template-columns: repeat(${chaptercolumns}, minmax(0, 1fr))`"
+          class="grid gap-px bg-black max-h-full max-w-full"
+          x-bind:style="`grid-template-columns: repeat(${chaptercolumns}, minmax(0, 1fr)); width: ${chaptercolumns*3}rem`"
         >
           <template x-for="chap in maxchapter" x-key="chap">
             <button
-              class="font-bold text-nowrap !p-[unset] text-white bg-gray-600"
+              class="font-bold text-nowrap aspect-square text-white bg-gray-600"
               x-bind:class="chap == chapter ? 'bg-gray-600': 'bg-gray-800'"
               x-text="chap"
               x-on:click="chapter = chap; chaptersopened = false"
@@ -153,22 +168,25 @@
       <div
         x-data="{modulesmenuopened: false,}"
         x-on:toggle-modules.window="modulesmenuopened = !modulesmenuopened"
-        x-on:htmx:after-swap.window="modules = await (await fetch('/api-json/modules')).json()"
+        x-init="modules = await (await fetch(`/bible-json/module`)).json()"
         class="flex bg-black/20 z-[900] justify-center items-center fixed flex-wrap inset-0"
         x-show="modulesmenuopened"
         x-cloak
       >
         <div
           x-on:click.outside="modulesmenuopened = false"
-          class="max-h-96 max-w-96 grid grid-cols-1 bg-black gap-px"
+          class="max-h-full max-w-full grid grid-cols-1 bg-black gap-px"
+          x-bind:style="`height: ${modules.length * 2}rem`"
         >
-          <template x-for="singlemodule in modules" x-key="singlemodule">
+          <template x-for="singlemodule in modules" x-key="singlemodule.name">
             <button
-              class="text-nowrap py-1 px-3 text-left bg-gray-800"
-              x-text="singlemodule"
-              x-show="singlemodule != module && singlemodule != module2"
-              x-on:click="module = singlemodule ; modulesmenuopened = false"
-            ></button>
+              class="flex items-center px-3 text-left bg-gray-800"
+              x-show="singlemodule.name != module && singlemodule.name != module2"
+              x-on:click="module = singlemodule.name ; modulesmenuopened = false"
+            >
+              <span class="!w-20" x-text="singlemodule.name"></span>
+              <span x-text="singlemodule.description"></span>
+            </button>
           </template>
         </div>
       </div>
@@ -183,33 +201,60 @@
       >
         <div
           x-on:click.outside="modules2menuopened = false"
-          class="grid grid-cols-1 gap-px bg-black max-w-96 max-h-96 h-full"
+          class="grid grid-cols-1 gap-px bg-black max-w-full max-h-full"
+          x-bind:style="`height: ${modules.length * 2}rem`"
         >
-          <template x-for="singlemodule in modules" x-key="singlemodule + '-2'">
+          <template
+            x-for="singlemodule in modules"
+            x-key="singlemodule.name + '-2'"
+          >
             <button
-              class="text-left text-nowrap !py-[unset] px-3 bg-gray-800"
-              x-text="singlemodule"
-              x-show="singlemodule != module2 && singlemodule != module"
-              x-on:click="module2 = singlemodule; modules2menuopened = false"
-            ></button>
+              class="flex items-center px-3 text-left bg-gray-800"
+              x-show="singlemodule.name != module && singlemodule.name != module2"
+              x-on:click="module2 = singlemodule.name ; modules2menuopened = false"
+            >
+              <span class="!w-20" x-text="singlemodule.name"></span>
+              <span x-text="singlemodule.description"></span>
+            </button>
           </template>
         </div>
       </div>
 
       <div
-        hx-get="/api-html/chapter"
-        x-bind:hx-vals="JSON.stringify({
-        m: module,
-        m2: module2,
-        b: book_number,
-        c: chapter
-        })"
-        hx-target="#bible"
-        hx-trigger="load, changed from:document"
+        x-on:changed.window="true; try{firstColumn = await (await fetch(`/bible-json/chapter/${module}/${book_number}/${chapter}`)).json() || []}catch{firstColumn = []};
+        try{secondColumn =  await (await fetch(`/bible-json/chapter/${module2}/${book_number}/${chapter}`)).json() || []  }catch{secondColumn = []}"
+        x-init="true; try{firstColumn = await (await fetch(`/bible-json/chapter/${module}/${book_number}/${chapter}`)).json() || []}catch{firstColumn = []};
+        try{secondColumn =  await (await fetch(`/bible-json/chapter/${module2}/${book_number}/${chapter}`)).json() || [] }catch{secondColumn = []}"
       ></div>
 
-      <section id="bible" class="mt-10 text-xl">
-        <div class="grid grid-cols-3 w-full"></div>
+      <section
+        id="bible"
+        class="mt-10 text-xl"
+        x-effect="maxColumnLength = Math.max(firstColumn.length || 0, secondColumn.length || 0)"
+      >
+        <template x-for="verse in maxColumnLength">
+          <div class="flex gap-2">
+            <span class="w-full">
+              <span
+                class="text-nowrap text-green-700 dark:text-green-500"
+                x-text="verse"
+              ></span>
+              <template x-if="firstColumn[verse - 1]">
+                <span x-html="firstColumn[verse - 1]"></span>
+              </template>
+            </span>
+            <template x-if="module2">
+              <span class="w-full">
+                <template x-if="secondColumn[verse - 1]">
+                  <span x-html="secondColumn[verse - 1]"></span>
+                </template>
+                <template x-if="!secondColumn[verse - 1]">
+                  <span></span>
+                </template>
+              </span>
+            </template>
+          </div>
+        </template>
       </section>
     </main>
 
@@ -220,6 +265,9 @@
           module2: Alpine.$persist(""),
           book_number: Alpine.$persist(470),
           chapter: Alpine.$persist(1).as("_x_other-chapter"),
+          firstColumn: [],
+          secondColumn: [],
+          maxColumnLength: 0,
           bookstable: [],
           bookstable2: [],
           modules: [],
@@ -296,13 +344,10 @@
             { book_number: 730, max: 22, chapter: 1 },
           ]),
           getSquareColumns(maxItems) {
-            // Calculate the square root of the maximum number of items
             const squareRoot = Math.sqrt(maxItems);
 
-            // Round down the square root to the nearest integer
             const columns = Math.floor(squareRoot);
 
-            // If the number of items is a perfect square, return the square root
             if (columns * columns === maxItems) {
               return columns;
             }
@@ -360,4 +405,3 @@
     </script>
   </body>
 </html>
-{{ end }}

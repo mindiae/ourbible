@@ -22,10 +22,6 @@
   z-index: 98;
 }
 
-.m-0 {
-  margin: 0px;
-}
-
 .mt-10 {
   margin-top: 2.5rem;
 }
@@ -42,40 +38,32 @@
   display: grid;
 }
 
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
 .h-8 {
   height: 2rem;
 }
 
-.h-full {
-  height: 100%;
+.max-h-full {
+  max-height: 100%;
 }
 
-.max-h-96 {
-  max-height: 24rem;
-}
-
-.max-h-\[40rem\] {
-  max-height: 40rem;
+.\!w-20 {
+  width: 5rem !important;
 }
 
 .w-full {
   width: 100%;
 }
 
-.max-w-96 {
-  max-width: 24rem;
-}
-
-.max-w-\[40rem\] {
-  max-width: 40rem;
+.max-w-full {
+  max-width: 100%;
 }
 
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .grid-cols-6 {
@@ -96,10 +84,6 @@
 
 .\!justify-between {
   justify-content: space-between !important;
-}
-
-.justify-stretch {
-  justify-content: stretch;
 }
 
 .gap-2 {
@@ -137,10 +121,6 @@
   background-color: rgb(31 41 55 / var(--tw-bg-opacity));
 }
 
-.\!p-\[unset\] {
-  padding: unset !important;
-}
-
 .\!py-\[unset\] {
   padding-top: unset !important;
   padding-bottom: unset !important;
@@ -149,11 +129,6 @@
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
-}
-
-.py-1 {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
 }
 
 .text-left {
@@ -178,8 +153,47 @@
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.text-green-700 {
+  --tw-text-opacity: 1;
+  color: rgb(21 128 61 / var(--tw-text-opacity));
+}
+
 .j {
   color: firebrick;
+}
+
+[x-cloak] {
+  display: none !important;
+}
+
+.dark\:bg-gray-900:where(.dark, .dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-teal-900:where(.dark, .dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(19 78 74 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-\[\#dddddd\]:where(.dark, .dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(221 221 221 / var(--tw-bg-opacity));
+}
+
+.dark\:bg-\[\#333333\]:where(.dark, .dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(51 51 51 / var(--tw-bg-opacity));
+}
+
+.dark\:text-white:where(.dark, .dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.dark\:text-green-500:where(.dark, .dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(34 197 94 / var(--tw-text-opacity));
 }
 
 .\[\&_button\]\:border-none button {

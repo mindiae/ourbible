@@ -10,7 +10,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Book represents a book record
 type Book struct {
 	BookNumber int16  `json:"book_number"`
 	BookColor  string `json:"book_color"`
@@ -18,31 +17,27 @@ type Book struct {
 	LongName   string `json:"long_name"`
 }
 
-func booksHandler(c echo.Context) error {
-	m := c.QueryParam("m")
+func BooksHandler(c echo.Context) error {
+	module := c.Param("module")
 
-	file := filepath.Join(APP_ROOT, "database", fmt.Sprintf("%s.SQLite3", m))
+	file := filepath.Join(APP_ROOT, "database", fmt.Sprintf("%s.SQLite3", module))
 	if !fileExists(file) {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Database file does not exist\n" + file})
 	}
-	// Open the SQLite database
 	db, err := sql.Open("sqlite3", file)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	defer db.Close()
 
-	// Query the books table
-	rows, err := db.Query("SELECT * FROM books") // Adjust the fields as per your schema
+	rows, err := db.Query("SELECT book_color, book_number, short_name, long_name FROM books")
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	defer rows.Close()
 
-	// Slice to hold the books
 	var books []Book
 
-	// Iterate through the rows
 	for rows.Next() {
 		var book Book
 		if err := rows.Scan(&book.BookColor, &book.BookNumber, &book.ShortName, &book.LongName); err != nil {
@@ -51,11 +46,9 @@ func booksHandler(c echo.Context) error {
 		books = append(books, book)
 	}
 
-	// Check for any errors encountered during iteration
 	if err := rows.Err(); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
-	// Return the list of books as JSON
 	return c.JSON(http.StatusOK, books)
 }

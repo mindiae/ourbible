@@ -55,3 +55,9 @@
 .fa-calendar-alt::before {
   content: "\f073";
 }
+.fa-sun::before {
+  content: "\f185";
+}
+.fa-moon::before {
+  content: "\f186";
+}

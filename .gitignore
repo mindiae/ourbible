@@ -1,7 +1,6 @@
 # production
-/build/ourbible
-/src
-/pkg
-/tmp
-
+/build/*
+!/build/README.md
+/static/bible-json/*
+!/static/bible-json/README.md
 

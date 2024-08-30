@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="${0%/*}"
+OUTPUT_DIR="$SCRIPT_DIR/../ourbible/bible-json"
+DB_DIR="$SCRIPT_DIR/../database"
+
+[ -d "$OUTPUT_DIR/chapter" ] || mkdir "$OUTPUT_DIR/chapter"
+
+for db in "$DB_DIR/"*; do
+  file="${db##*/}"
+  module="${file%.SQLite3}"
+
+  [ -d "$OUTPUT_DIR/chapter/$module" ] || mkdir "$OUTPUT_DIR/chapter/$module"
+
+  for book_number in $(
+    sqlite3 "$DB_DIR/$file" "SELECT book_number FROM books"
+  ); do
+    [ -d "$OUTPUT_DIR/chapter/$module/$book_number" ] || mkdir "$OUTPUT_DIR/chapter/$module/$book_number"
+
+    for chapter in $(
+      sqlite3 "$DB_DIR/$file" \
+        "SELECT chapter FROM verses WHERE book_number = '$book_number' AND verse = 1 "
+    ); do
+      sqlite3 --json "$DB_DIR/$file" \
+        "SELECT text FROM verses WHERE book_number = '$book_number' AND chapter = '$chapter'" |
+        jq '[.[] | .text]' >"$OUTPUT_DIR/chapter/$module/$book_number/$chapter"
+    done
+  done
+done
