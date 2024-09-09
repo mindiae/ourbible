@@ -1,0 +1,13 @@
+{
+  "extends": ["plugin:html/recommended"],
+  "plugins": ["html"],
+  "overrides": [
+    {
+      "files": ["*.html"],
+      "rules": {
+        "indent": ["error", 2],
+        "quotes": ["error", "double"]
+      }
+    }
+  ]
+}

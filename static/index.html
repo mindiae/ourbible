@@ -14,7 +14,7 @@
   <body
     x-data="{darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches)}"
     x-bind:class="{'dark': darkMode}"
-    class="dark:text-white dark:bg-[#333333]"
+    class="dark:text-white dark:bg-[#222222]"
   >
     <main
       style="max-width: 70rem; margin-inline: auto"
@@ -22,6 +22,7 @@
       x-data="myData"
     >
       <div
+        id="topBar"
         class="!flex gap-px !justify-between flex-wrap sticky z-[98] top-0 bg-black"
       >
         <div class="!flex gap-px h-8">
@@ -40,7 +41,7 @@
           <button
             class="bg-gray-800 px-3 !py-[unset] font-bold"
             x-on:click="$dispatch('toggle-books')"
-            x-text="`${bookstable?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}`"
+            x-text="`${bookstable?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}:${verseNumber}`"
           ></button>
 
           <button
@@ -221,32 +222,41 @@
       </div>
 
       <div
-        x-on:changed.window="true; try{firstColumn = await (await fetch(`/bible-json/chapter/${module}/${book_number}/${chapter}`)).json() || []}catch{firstColumn = []};
-        try{secondColumn =  await (await fetch(`/bible-json/chapter/${module2}/${book_number}/${chapter}`)).json() || []  }catch{secondColumn = []}"
-        x-init="true; try{firstColumn = await (await fetch(`/bible-json/chapter/${module}/${book_number}/${chapter}`)).json() || []}catch{firstColumn = []};
-        try{secondColumn =  await (await fetch(`/bible-json/chapter/${module2}/${book_number}/${chapter}`)).json() || [] }catch{secondColumn = []}"
+        x-on:changed.window="loadColumn(module, 'firstColumn'); loadColumn(module2, 'secondColumn')"
+        x-init="loadColumn(module, 'firstColumn'); loadColumn(module2, 'secondColumn')"
       ></div>
 
       <section
         id="bible"
-        class="mt-10 text-xl"
+        class="mt-10 text-xl [&_t]:block [&_t]:ms-[5%] [&_e]:font-bold [&_m]:hidden [&_s]:hidden [&_j]:dark:text-red-500 [&_j]:text-red-800 [&_j]:!inline"
         x-effect="maxColumnLength = Math.max(firstColumn.length || 0, secondColumn.length || 0)"
       >
-        <template x-for="verse in maxColumnLength">
-          <div class="flex gap-2">
-            <span class="w-full">
+        <template x-for="verse in maxColumnLength" x-key="verse">
+          <div
+            x-on:scroll.window="verseNumber=
+            $el.getBoundingClientRect().top <
+            document.getElementById('topBar').getBoundingClientRect().bottom ?
+            verse : verseNumber"
+            class="grid gap-2 !text-nowrap"
+            x-bind:id="'verse' + '_' + book_number + '_' + chapter + '_' + verse"
+            x-bind:class="{'grid-cols-2': module2, 'grid-cols-1': !module2}"
+          >
+            <span>
               <span
-                class="text-nowrap text-green-700 dark:text-green-500"
-                x-text="verse"
+                class="float-left text-nowrap text-green-700 dark:text-green-500"
+                x-text="verse + '&nbsp;'"
               ></span>
               <template x-if="firstColumn[verse - 1]">
-                <span x-html="firstColumn[verse - 1]"></span>
+                <span class="text-wrap" x-html="firstColumn[verse - 1]"></span>
               </template>
             </span>
             <template x-if="module2">
-              <span class="w-full">
+              <span>
                 <template x-if="secondColumn[verse - 1]">
-                  <span x-html="secondColumn[verse - 1]"></span>
+                  <span
+                    class="text-wrap"
+                    x-html="secondColumn[verse - 1]"
+                  ></span>
                 </template>
                 <template x-if="!secondColumn[verse - 1]">
                   <span></span>
@@ -255,6 +265,7 @@
             </template>
           </div>
         </template>
+        <div class="min-h-screen"></div>
       </section>
     </main>
 
@@ -265,6 +276,7 @@
           module2: Alpine.$persist(""),
           book_number: Alpine.$persist(470),
           chapter: Alpine.$persist(1).as("_x_other-chapter"),
+          verseNumber: Alpine.$persist(1),
           firstColumn: [],
           secondColumn: [],
           maxColumnLength: 0,
@@ -276,72 +288,72 @@
           maxchapter: 1,
           chaptercolumns: 6,
           books: Alpine.$persist([
-            { book_number: 10, max: 50, chapter: 1 },
-            { book_number: 20, max: 40, chapter: 1 },
-            { book_number: 30, max: 27, chapter: 1 },
-            { book_number: 40, max: 36, chapter: 1 },
-            { book_number: 50, max: 34, chapter: 1 },
-            { book_number: 60, max: 24, chapter: 1 },
-            { book_number: 70, max: 21, chapter: 1 },
-            { book_number: 80, max: 4, chapter: 1 },
-            { book_number: 90, max: 31, chapter: 1 },
-            { book_number: 100, max: 24, chapter: 1 },
-            { book_number: 110, max: 22, chapter: 1 },
-            { book_number: 120, max: 25, chapter: 1 },
-            { book_number: 130, max: 29, chapter: 1 },
-            { book_number: 140, max: 36, chapter: 1 },
-            { book_number: 150, max: 10, chapter: 1 },
-            { book_number: 160, max: 5, chapter: 1 },
-            { book_number: 190, max: 5, chapter: 1 },
-            { book_number: 220, max: 43, chapter: 1 },
-            { book_number: 230, max: 150, chapter: 1 },
-            { book_number: 240, max: 31, chapter: 1 },
-            { book_number: 250, max: 5, chapter: 1 },
-            { book_number: 260, max: 8, chapter: 1 },
-            { book_number: 290, max: 66, chapter: 1 },
-            { book_number: 300, max: 52, chapter: 1 },
-            { book_number: 310, max: 5, chapter: 1 },
-            { book_number: 330, max: 48, chapter: 1 },
-            { book_number: 340, max: 14, chapter: 1 },
-            { book_number: 350, max: 14, chapter: 1 },
-            { book_number: 360, max: 4, chapter: 1 },
-            { book_number: 370, max: 9, chapter: 1 },
-            { book_number: 380, max: 1, chapter: 1 },
-            { book_number: 390, max: 4, chapter: 1 },
-            { book_number: 400, max: 7, chapter: 1 },
-            { book_number: 410, max: 3, chapter: 1 },
-            { book_number: 420, max: 3, chapter: 1 },
-            { book_number: 430, max: 3, chapter: 1 },
-            { book_number: 440, max: 2, chapter: 1 },
-            { book_number: 450, max: 14, chapter: 1 },
-            { book_number: 460, max: 4, chapter: 1 },
-            { book_number: 470, max: 28, chapter: 1 },
-            { book_number: 480, max: 16, chapter: 1 },
-            { book_number: 490, max: 24, chapter: 1 },
-            { book_number: 500, max: 21, chapter: 1 },
-            { book_number: 510, max: 28, chapter: 1 },
-            { book_number: 520, max: 16, chapter: 1 },
-            { book_number: 530, max: 16, chapter: 1 },
-            { book_number: 540, max: 13, chapter: 1 },
-            { book_number: 550, max: 6, chapter: 1 },
-            { book_number: 560, max: 6, chapter: 1 },
-            { book_number: 570, max: 4, chapter: 1 },
-            { book_number: 580, max: 4, chapter: 1 },
-            { book_number: 590, max: 5, chapter: 1 },
-            { book_number: 600, max: 3, chapter: 1 },
-            { book_number: 610, max: 6, chapter: 1 },
-            { book_number: 620, max: 4, chapter: 1 },
-            { book_number: 630, max: 3, chapter: 1 },
-            { book_number: 640, max: 1, chapter: 1 },
-            { book_number: 650, max: 13, chapter: 1 },
-            { book_number: 660, max: 5, chapter: 1 },
-            { book_number: 670, max: 5, chapter: 1 },
-            { book_number: 680, max: 3, chapter: 1 },
-            { book_number: 690, max: 5, chapter: 1 },
-            { book_number: 700, max: 1, chapter: 1 },
-            { book_number: 710, max: 1, chapter: 1 },
-            { book_number: 720, max: 1, chapter: 1 },
-            { book_number: 730, max: 22, chapter: 1 },
+            { book_number: 10, max: 50, chapter: 1, verse: 1 },
+            { book_number: 20, max: 40, chapter: 1, verse: 1 },
+            { book_number: 30, max: 27, chapter: 1, verse: 1 },
+            { book_number: 40, max: 36, chapter: 1, verse: 1 },
+            { book_number: 50, max: 34, chapter: 1, verse: 1 },
+            { book_number: 60, max: 24, chapter: 1, verse: 1 },
+            { book_number: 70, max: 21, chapter: 1, verse: 1 },
+            { book_number: 80, max: 4, chapter: 1, verse: 1 },
+            { book_number: 90, max: 31, chapter: 1, verse: 1 },
+            { book_number: 100, max: 24, chapter: 1, verse: 1 },
+            { book_number: 110, max: 22, chapter: 1, verse: 1 },
+            { book_number: 120, max: 25, chapter: 1, verse: 1 },
+            { book_number: 130, max: 29, chapter: 1, verse: 1 },
+            { book_number: 140, max: 36, chapter: 1, verse: 1 },
+            { book_number: 150, max: 10, chapter: 1, verse: 1 },
+            { book_number: 160, max: 5, chapter: 1, verse: 1 },
+            { book_number: 190, max: 5, chapter: 1, verse: 1 },
+            { book_number: 220, max: 43, chapter: 1, verse: 1 },
+            { book_number: 230, max: 150, chapter: 1, verse: 1 },
+            { book_number: 240, max: 31, chapter: 1, verse: 1 },
+            { book_number: 250, max: 5, chapter: 1, verse: 1 },
+            { book_number: 260, max: 8, chapter: 1, verse: 1 },
+            { book_number: 290, max: 66, chapter: 1, verse: 1 },
+            { book_number: 300, max: 52, chapter: 1, verse: 1 },
+            { book_number: 310, max: 5, chapter: 1, verse: 1 },
+            { book_number: 330, max: 48, chapter: 1, verse: 1 },
+            { book_number: 340, max: 14, chapter: 1, verse: 1 },
+            { book_number: 350, max: 14, chapter: 1, verse: 1 },
+            { book_number: 360, max: 4, chapter: 1, verse: 1 },
+            { book_number: 370, max: 9, chapter: 1, verse: 1 },
+            { book_number: 380, max: 1, chapter: 1, verse: 1 },
+            { book_number: 390, max: 4, chapter: 1, verse: 1 },
+            { book_number: 400, max: 7, chapter: 1, verse: 1 },
+            { book_number: 410, max: 3, chapter: 1, verse: 1 },
+            { book_number: 420, max: 3, chapter: 1, verse: 1 },
+            { book_number: 430, max: 3, chapter: 1, verse: 1 },
+            { book_number: 440, max: 2, chapter: 1, verse: 1 },
+            { book_number: 450, max: 14, chapter: 1, verse: 1 },
+            { book_number: 460, max: 4, chapter: 1, verse: 1 },
+            { book_number: 470, max: 28, chapter: 1, verse: 1 },
+            { book_number: 480, max: 16, chapter: 1, verse: 1 },
+            { book_number: 490, max: 24, chapter: 1, verse: 1 },
+            { book_number: 500, max: 21, chapter: 1, verse: 1 },
+            { book_number: 510, max: 28, chapter: 1, verse: 1 },
+            { book_number: 520, max: 16, chapter: 1, verse: 1 },
+            { book_number: 530, max: 16, chapter: 1, verse: 1 },
+            { book_number: 540, max: 13, chapter: 1, verse: 1 },
+            { book_number: 550, max: 6, chapter: 1, verse: 1 },
+            { book_number: 560, max: 6, chapter: 1, verse: 1 },
+            { book_number: 570, max: 4, chapter: 1, verse: 1 },
+            { book_number: 580, max: 4, chapter: 1, verse: 1 },
+            { book_number: 590, max: 5, chapter: 1, verse: 1 },
+            { book_number: 600, max: 3, chapter: 1, verse: 1 },
+            { book_number: 610, max: 6, chapter: 1, verse: 1 },
+            { book_number: 620, max: 4, chapter: 1, verse: 1 },
+            { book_number: 630, max: 3, chapter: 1, verse: 1 },
+            { book_number: 640, max: 1, chapter: 1, verse: 1 },
+            { book_number: 650, max: 13, chapter: 1, verse: 1 },
+            { book_number: 660, max: 5, chapter: 1, verse: 1 },
+            { book_number: 670, max: 5, chapter: 1, verse: 1 },
+            { book_number: 680, max: 3, chapter: 1, verse: 1 },
+            { book_number: 690, max: 5, chapter: 1, verse: 1 },
+            { book_number: 700, max: 1, chapter: 1, verse: 1 },
+            { book_number: 710, max: 1, chapter: 1, verse: 1 },
+            { book_number: 720, max: 1, chapter: 1, verse: 1 },
+            { book_number: 730, max: 22, chapter: 1, verse: 1 },
           ]),
           getSquareColumns(maxItems) {
             const squareRoot = Math.sqrt(maxItems);
@@ -352,15 +364,53 @@
               return columns;
             }
 
-            // If the number of items is not a perfect square, return the next higher integer
             return columns + 1;
+          },
+          scrollIntoVerse(verse) {
+            const id =
+              "verse" +
+              "_" +
+              this.book_number +
+              "_" +
+              this.chapter +
+              "_" +
+              verse;
+            this.$nextTick(() => {
+              document.getElementById(id).scrollIntoView();
+            });
+          },
+          loadColumn(module, columnName) {
+            if (module)
+              fetch(
+                `/bible-json/chapter/${module}/${this.book_number}/${this.chapter}`,
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  this[columnName] =
+                    data.map((item) => {
+                      return item.replace(
+                        /([^><]+)<S>(\d+)<\/S>/g,
+                        "<span @click='console.log(`$2`)'>$1</span>",
+                      );
+                    }) || [];
+                })
+                .catch((error) => {
+                  console.error("Error loading column:", error);
+                  return [];
+                });
           },
           init() {
             if (!this.module) this.module = "OGB";
             this.$dispatch("getbooks");
             this.$dispatch("getbooks2");
 
+            this.$watch("firstColumn", (value, oldValue) => {
+              if (oldValue.length == 0) {
+                this.scrollIntoVerse(this.verseNumber);
+              }
+            });
             this.$watch("chapter", (value, oldValue) => {
+              this.verseNumber = 1;
               if (
                 this.books.find((book) => book.book_number == this.book_number)
                   .max < value ||
@@ -375,18 +425,29 @@
                 this.$dispatch("changed");
               }
             });
+            this.$watch("verseNumber", (value, oldValue) => {
+              this.books.find(
+                (book) => book.book_number == this.book_number,
+              ).verse = value;
+            });
+
             this.$watch("module", () => {
               this.$dispatch("module-changed");
               this.$dispatch("changed");
             });
             this.$watch("module2", () => {
               this.$dispatch("module2-changed");
+              this.scrollIntoVerse(this.verseNumber);
               this.$dispatch("changed");
             });
             this.$watch("book_number", (value, oldValue) => {
               this.chapter = this.books.find(
                 (book) => book.book_number == value,
               ).chapter;
+              const verse = this.books.find(
+                (book) => book.book_number == value,
+              ).verse;
+              this.scrollIntoVerse(verse);
               this.maxchapter = this.books.find(
                 (book) => book.book_number == value,
               ).max;

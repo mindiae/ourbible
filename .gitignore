@@ -1,6 +1,7 @@
 # production
-/build/*
-!/build/README.md
-/static/bible-json/*
-!/static/bible-json/README.md
-
+build/*
+!build/README.md
+static/bible-json/*
+!static/bible-json/README.md
+node_modules/
+pnpm-lock.yaml
