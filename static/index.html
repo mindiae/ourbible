@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <script defer src="js/alpinejs-swipe.js"></script>
     <script defer src="js/persist.js"></script>
     <script defer src="js/alpine.js"></script>
     <title></title>
@@ -15,6 +16,8 @@
     x-data="{darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches)}"
     x-bind:class="{'dark': darkMode}"
     class="dark:text-white dark:bg-[#222222]"
+    x-swipe:right.threshold.100px="chapter++; window.scrollTo(0, 0)"
+    x-swipe:left.threshold.100px="chapter--; window.scrollTo(0, 0)"
   >
     <main
       style="max-width: 70rem; margin-inline: auto"
