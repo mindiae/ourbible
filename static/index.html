@@ -16,13 +16,13 @@
     x-data="{darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches)}"
     x-bind:class="{'dark': darkMode}"
     class="dark:text-white dark:bg-[#222222]"
-    x-swipe:right.threshold.100px="chapter++; window.scrollTo(0, 0)"
-    x-swipe:left.threshold.100px="chapter--; window.scrollTo(0, 0)"
   >
     <main
       style="max-width: 70rem; margin-inline: auto"
       class="[&_button]:font-sans [&_button]:text-white [&_button]:border-none font-sans"
       x-data="myData"
+      x-swipe:left.threshold.100px="chapter++; window.scrollTo(0, 0)"
+      x-swipe:right.threshold.100px="chapter--; window.scrollTo(0, 0)"
     >
       <div
         id="topBar"
