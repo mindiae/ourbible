@@ -32,6 +32,6 @@ Source: "database\*"; DestDir: "{app}\database";
 Source: "static\*"; DestDir: "{app}\static"; Flags: recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\OurBible"; Filename: "{app}\ourbible.exe"; Tasks: desktopicon; IconFile: "{app}\static\favicon.ico"
-IconFile: "{app}\static\favicon.ico"
+Name: "{group}\OurBible"; Filename: "{app}\ourbible.exe"; IconFilename: "{app}\static\favicon.ico"
+Name: "{commondesktop}\OurBible"; Filename: "{app}\ourbible.exe"; IconFilename: "{app}\static\favicon.ico"
 
