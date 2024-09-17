@@ -1,4 +1,4 @@
-# OurBible GUI bible viewer which also comes with Web interface
+# OurBible GUI Bible viewer which also comes with web interface
 
 ## Installation:
 
