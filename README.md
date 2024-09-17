@@ -12,8 +12,10 @@ makepkg
 sudo pacman -U ourbible-0.10.0-0-x86_64.pkg.tar.zst
 ```
 
-On Windows
+On Windows:
+
 You have to have mingw64 installed for gcc and put into PATH variable
+
 For creating windows installation file you have to have innosetup insalled
 
 ```bash
