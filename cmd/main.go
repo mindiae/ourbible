@@ -34,18 +34,14 @@ func main() {
 	e.GET("/bible-json/book/:module", BooksHandler)
 	e.Static("/", filepath.Join(APP_ROOT, "static"))
 
-	// Start the Echo server in a goroutine
 	go func() {
 		e.Logger.Fatal(e.Start(":42069"))
 	}()
 
-	// Initialize the webview
 	w := webview.New(false)
 	w.SetTitle("OurBible")
 	w.SetSize(800, 600, webview.HintNone)
 
-	// Navigate to the correct port
-	w.Navigate("http://localhost:42069") // Match the Echo server port
-
+	w.Navigate("http://localhost:42069")
 	w.Run()
 }

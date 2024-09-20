@@ -26,12 +26,12 @@
   float: left;
 }
 
-.mt-10 {
-  margin-top: 2.5rem;
+.m-0 {
+  margin: 0px;
 }
 
-.inline {
-  display: inline;
+.mt-10 {
+  margin-top: 2.5rem;
 }
 
 .\!flex {
@@ -52,6 +52,10 @@
 
 .h-8 {
   height: 2rem;
+}
+
+.h-\[calc\(100vh-2rem\)\] {
+  height: calc(100vh - 2rem);
 }
 
 .max-h-full {
@@ -106,16 +110,20 @@
   gap: 1px;
 }
 
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
 .text-wrap {
   text-wrap: wrap;
 }
 
-.text-nowrap {
-  text-wrap: nowrap;
-}
-
 .\!text-nowrap {
   text-wrap: nowrap !important;
+}
+
+.text-nowrap {
+  text-wrap: nowrap;
 }
 
 .border {
@@ -212,10 +220,6 @@
 
 .\[\&_e\]\:font-bold e {
   font-weight: 700;
-}
-
-.\[\&_j\]\:inline j {
-  display: inline;
 }
 
 .\[\&_j\]\:\!inline j {
