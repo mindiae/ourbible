@@ -20,11 +20,13 @@
 
 .fas {
   font-weight: 900;
-  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Free Solid",
+    "Font Awesome 5 Free";
 }
 .far {
   font-weight: 400;
-  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free";
+  font-family: "Font Awesome 6 Free", "Font Awesome 6 Free Regular",
+    "Font Awesome 5 Free";
 }
 
 .fas,

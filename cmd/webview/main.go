@@ -113,7 +113,7 @@ func main() {
 		return
 	}
 
-	w := webview.New(true)
+	w := webview.New(false)
 	w.SetTitle("OurBible")
 	w.SetSize(800, 600, webview.HintNone)
 
