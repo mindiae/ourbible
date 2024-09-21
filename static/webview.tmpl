@@ -75,7 +75,7 @@
         </div>
         <section id="bible"
                  class="h-[calc(100vh-2rem)] overflow-y-auto px-3 text-xl [&_t]:block [&_t]:ms-[5%] [&_e]:font-bold [&_m]:hidden [&_s]:hidden [&_j]:dark:text-red-500 [&_j]:text-red-800 [&_j]:!inline"
-                 x-on:scroll="const box = document .getElementById('verse' + '_' + book_number + '_' + chapter + '_' + verseNumber) .getBoundingClientRect() if (box.top - topbarBottom > 0 && verseNumber > 1) verseNumber-- if (box.bottom - topbarBottom < 0 && maxColumnLength > verseNumber ) verseNumber++ ">
+                 x-on:scroll="const box = document.getElementById('verse' + '_' + book_number + '_' + chapter + '_' + verseNumber).getBoundingClientRect(); if (box.top - topbarBottom > 0 && verseNumber > 1) verseNumber--; if (box.bottom - topbarBottom < 0 && maxColumnLength > verseNumber ) verseNumber++ ">
           <div id="contentTop"></div>
           <template x-for="verse in maxColumnLength" x-key="verse">
             <div class="grid gap-2 !text-nowrap"
