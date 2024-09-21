@@ -21,7 +21,7 @@ For creating windows installation file you have to have innosetup insalled
 ```bash
 git clone https://github.com/mindiae/ourbible.git
 cd ourbible
-go build -o build/ourbible.exe -ldflags "-H=windowsgui" ./src
+go build -o build/ourbible.exe -ldflags "-H=windowsgui" ./cmd/webview/
 ./build/ourbible.exe
 ```
 

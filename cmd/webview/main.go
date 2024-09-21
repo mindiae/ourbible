@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	_ "github.com/mattn/go-sqlite3"
 	webview "github.com/webview/webview_go"
@@ -68,16 +71,6 @@ func main() {
 	}
 	defer db.Close()
 
-	head := `
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <style>
-  `
-
 	alpineSwipeFileName := filepath.Join(APP_ROOT, "static/js/alpinejs-swipe.js")
 	alpineSwipe, err := os.ReadFile(alpineSwipeFileName)
 	if err != nil {
@@ -106,34 +99,106 @@ func main() {
 		return
 	}
 
-	htmlFileName := filepath.Join(APP_ROOT, "static/webview.html")
+	htmlFileName := filepath.Join(APP_ROOT, "static/webview.tmpl")
 	html, err := os.ReadFile(htmlFileName)
 	if err != nil {
-		fmt.Println("Error reading webview.html file:", err)
+		fmt.Println("Error reading webview.tmpl file:", err)
 		return
 	}
 
-	w := webview.New(false)
+	tmpl, err := template.New("main").Parse(string(html))
+	if err != nil {
+		fmt.Println("Error parsing template:", err)
+		return
+	}
+
+	modules, err := ModulesHandler()
+	if err != nil {
+		fmt.Println("Error getting modules", err)
+	}
+	modulesJson, _ := json.Marshal(modules)
+
+	strings, err := GetStrings(db)
+	if err != nil {
+		fmt.Println("Error getting strings", err)
+	}
+
+	ints, err := GetInts(db)
+	if err != nil {
+		fmt.Println("Error getting numbers", err)
+	}
+
+	books, err := GetBooks(db)
+	if err != nil {
+		fmt.Println("Error getting books", err)
+	}
+	booksJson, _ := json.Marshal(books)
+
+	booksTable, err := BooksHandler(strings["module"])
+	if err != nil {
+		fmt.Println("Error getting booksTable", err)
+	}
+	booksTableJson, _ := json.Marshal(booksTable)
+
+	booksTable2 := []Book{}
+
+	if strings["module2"] != "" {
+		booksTable2, err = BooksHandler(strings["module2"])
+		if err != nil {
+			fmt.Println("Error getting booksTable", err)
+		}
+	}
+
+	booksTable2Json, _ := json.Marshal(booksTable2)
+
+	data := struct {
+		Style            string
+		Javascript       string
+		Module           string
+		Module2          string
+		BookNumber       int16
+		Chapter          int16
+		Verse            int16
+		IsSystemDarkMode int16
+		DarkMode         int16
+		Books            string
+		Modules          string
+		BooksTable       string
+		BooksTable2      string
+	}{
+		Style:            "<style>" + string(bibleviewer) + string(fontawesome) + "</style>",
+		Javascript:       "<script>" + string(alpineSwipe) + string(alpine) + "</script>",
+		Module:           strings["module"],
+		Module2:          strings["module2"],
+		BookNumber:       ints["bookNumber"],
+		Chapter:          ints["chapter"],
+		Verse:            ints["verse"],
+		IsSystemDarkMode: ints["isSystemDarkMode"],
+		DarkMode:         ints["darkMode"],
+		Books:            string(booksJson),
+		Modules:          string(modulesJson),
+		BooksTable:       string(booksTableJson),
+		BooksTable2:      string(booksTable2Json),
+	}
+
+	var tpl bytes.Buffer
+
+	if err := tmpl.Execute(&tpl, data); err != nil {
+		fmt.Println("Error executing template:", err)
+		return
+	}
+
+	w := webview.New(true)
 	w.SetTitle("OurBible")
 	w.SetSize(800, 600, webview.HintNone)
 
 	w.Bind("getBooks", BooksHandler)
-	w.Bind("getModules", ModulesHandler)
 	w.Bind("getChapters", ChapterHandler)
-	w.Bind("getStringItem", func(key string) (string, error) {
-		return GetStringItem(db, key)
-	})
 	w.Bind("setStringItem", func(key string, value string) error {
 		return SetStringItem(db, key, value)
 	})
-	w.Bind("getNumberItem", func(key string) (int16, error) {
-		return GetIntItem(db, key)
-	})
 	w.Bind("setNumberItem", func(key string, value int16) error {
 		return SetIntItem(db, key, value)
-	})
-	w.Bind("getBooks", func() ([]map[string]int16, error) {
-		return GetBooks(db)
 	})
 	w.Bind("setBookVerse", func(bookNumber int16, value int16) error {
 		return SetBookVerse(db, bookNumber, value)
@@ -142,15 +207,7 @@ func main() {
 		return SetBookChapter(db, bookNumber, value)
 	})
 
-	w.SetHtml(head +
-		string(bibleviewer) +
-		string(fontawesome) +
-		`</style></head>` +
-		string(html) +
-		`<script>` +
-		string(alpineSwipe) +
-		string(alpine) +
-		`</script></html>`)
+	w.SetHtml(tpl.String())
 
 	w.Run()
 }

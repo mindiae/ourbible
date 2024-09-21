@@ -117,3 +117,53 @@ func SetBookChapter(db *sql.DB, bookNumber int16, value int16) error {
 
 	return nil
 }
+
+func GetStrings(db *sql.DB) (map[string]string, error) {
+	strings := map[string]string{}
+
+	rows, err := db.Query("SELECT key, value FROM strings")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var key string
+		var value string
+		if err := rows.Scan(&key, &value); err != nil {
+			return nil, err
+		}
+		strings[key] = value
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return strings, nil
+}
+
+func GetInts(db *sql.DB) (map[string]int16, error) {
+	ints := map[string]int16{}
+
+	rows, err := db.Query("SELECT key, value FROM numbers")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var key string
+		var value int16
+		if err := rows.Scan(&key, &value); err != nil {
+			return nil, err
+		}
+		ints[key] = value
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ints, nil
+}

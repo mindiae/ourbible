@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {{.Style}}
+  </head>
+  <body x-data="{ darkMode: {{.IsSystemDarkMode}} ? window.matchMedia('(prefers-color-scheme: dark)').matches : {{.DarkMode}} ? true : false, isSystemDarkMode: {{.IsSystemDarkMode}} ? true : false }"
+        x-bind:class="{'dark': darkMode}"
+        x-init=" Alpine.effect(async () => { await setNumberItem('isSystemDarkMode', isSystemDarkMode ? 1 : 0); }); Alpine.effect(async ()=> { if (!isSystemDarkMode){ await setNumberItem('darkMode', darkMode ? 1 : 0); } })"
+        class="dark:text-white dark:bg-[#222222] m-0">
+    <main style="max-width: 70rem;
+                 margin-inline: auto"
+          class="[&_button]:font-sans [&_button]:text-white [&_button]:border-none font-sans"
+          x-data="myData"
+          x-swipe:left.threshold.100px="chapter++; document.getElementById('contentTop').scrollIntoView()"
+          x-swipe:right.threshold.100px="chapter--; document.getElementById('contentTop').scrollIntoView()">
+      <div class="sticky z-[98] top-0">
+        <div id="topBar" class="!flex gap-px !justify-between flex-wrap bg-black">
+          <div class="!flex gap-px h-8">
+            <button class="bg-gray-800 px-3 !py-[unset] font-bold"
+                    x-on:click="$dispatch('toggle-modules')"
+                    x-text="module"></button>
+            <button x-show="!module2"
+                    class="text-xl bg-gray-800 px-3 !py-[unset]"
+                    x-on:click="module2 = modules.find(mod => mod.name != module).name">
+              <i class="far fa-plus-square"></i>
+            </button>
+            <button class="bg-gray-800 px-3 !py-[unset] font-bold"
+                    x-on:click="$dispatch('toggle-books')"
+                    x-text="`${bookstable?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}:${verseNumber}`">
+            </button>
+            <button class="bg-gray-800 px-3 !py-[unset]"
+                    x-on:click="chapter--; document.getElementById('contentTop').scrollIntoView()"
+                    x-on:keyup.left.window="chapter--; document.getElementById('contentTop').scrollIntoView()">
+              <i class="fas fa-arrow-left"></i>
+            </button>
+            <button class="bg-gray-800 px-3 !py-[unset]"
+                    x-on:click="chapter++; document.getElementById('contentTop').scrollIntoView()"
+                    x-on:keyup.right.window="chapter++; document.getElementById('contentTop').scrollIntoView()">
+              <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="bg-gray-800 !py-[unset]">
+              <span class="px-3"
+                    x-on:click="darkMode = false"
+                    x-show="darkMode && !isSystemDarkMode">
+                <i class="fas fa-moon"></i>
+              </span>
+              <span class="px-3"
+                    x-on:click="isSystemDarkMode = true; darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches"
+                    x-show="!darkMode && !isSystemDarkMode">
+                <i class="fas fa-sun"></i>
+              </span>
+              <span class="px-3"
+                    x-on:click="isSystemDarkMode = false; darkMode = true"
+                    x-show="isSystemDarkMode">
+                <i class="fas fa-desktop"></i>
+              </span>
+            </button>
+          </div>
+          <template x-if="module2">
+            <div class="!flex gap-px h-8">
+              <button class="bg-gray-800 px-3 !py-[unset] font-bold"
+                      x-on:click="$dispatch('toggle-modules2')"
+                      x-text="module2"></button>
+              <button class="bg-gray-800 px-3 !py-[unset]" x-on:click="module2 = ''">
+                <i class="fas fa-times"></i>
+              </button>
+              <button class="bg-gray-800 !py-[unset] px-3 font-bold"
+                      x-on:click="$dispatch('toggle-books2')"
+                      x-text="`${bookstable2?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}`">
+              </button>
+            </div>
+          </template>
+        </div>
+        <section id="bible"
+                 class="h-[calc(100vh-2rem)] overflow-y-auto px-3 text-xl [&_t]:block [&_t]:ms-[5%] [&_e]:font-bold [&_m]:hidden [&_s]:hidden [&_j]:dark:text-red-500 [&_j]:text-red-800 [&_j]:!inline"
+                 x-on:scroll="const box = document .getElementById('verse' + '_' + book_number + '_' + chapter + '_' + verseNumber) .getBoundingClientRect() if (box.top - topbarBottom > 0 && verseNumber > 1) verseNumber-- if (box.bottom - topbarBottom < 0 && maxColumnLength > verseNumber ) verseNumber++ ">
+          <div id="contentTop"></div>
+          <template x-for="verse in maxColumnLength" x-key="verse">
+            <div class="grid gap-2 !text-nowrap"
+                 x-bind:id="'verse' + '_' + book_number + '_' + chapter + '_' + verse"
+                 x-bind:class="{'grid-cols-2': module2, 'grid-cols-1': !module2}">
+              <span>
+                <span class="float-left text-nowrap text-green-700 dark:text-green-500"
+                      x-text="verse + '&nbsp;'"></span>
+                <template x-if="firstColumn[verse - 1]">
+                  <span class="text-wrap" x-html="firstColumn[verse - 1]"></span>
+                </template>
+              </span>
+              <template x-if="module2">
+                <span>
+                  <template x-if="secondColumn[verse - 1]">
+                    <span class="text-wrap" x-html="secondColumn[verse - 1]"></span>
+                  </template>
+                  <template x-if="!secondColumn[verse - 1]">
+                    <span></span>
+                  </template>
+                </span>
+              </template>
+            </div>
+          </template>
+          <div class="min-h-screen"></div>
+        </section>
+      </div>
+      <div x-data="{booksopened: false}"
+           x-init="$watch('booksopened', value=>{ if (!value){ $dispatch('open-chapters') } })"
+           x-on:toggle-books.window="booksopened = !booksopened"
+           x-on:module-changed.window="bookstable = await getBooks(module)"
+           class="flex justify-center items-center z-[900] fixed bg-black/20 inset-0"
+           x-show="booksopened"
+           x-cloak>
+        <div x-on:click.outside="booksopened = false"
+             x-on:click="$dispatch('book-changed')"
+             class="grid gap-px bg-black max-w-full max-h-full grid-cols-6"
+             x-bind:style="`height: ${Math.ceil(bookstable.length/6) * 2}rem`">
+          <template x-for="book in bookstable" x-key="book.book_number">
+            <button class="border font-bold text-nowrap bg-gray-800"
+                    x-bind:style="`color: ${book.book_color}`"
+                    x-text="book.short_name"
+                    x-on:click="book_number = book.book_number; booksopened = false"></button>
+          </template>
+        </div>
+      </div>
+      <div x-data="{books2opened: false}"
+           x-on:toggle-books2.window="books2opened = !books2opened"
+           x-init="$watch('books2opened', value=>{ if (!value){ $dispatch('open-chapters') } })"
+           x-on:module2-changed.window="bookstable2 = module2 ? await getBooks(module2) : []"
+           class="flex fixed z-[900] inset-0 justify-center items-center bg-black/20"
+           x-show="books2opened"
+           x-cloak>
+        <div x-on:click.outside="books2opened = false"
+             x-on:click="$dispatch('book-changed')"
+             class="bg-black grid grid-cols-6 max-w-full max-h-full gap-px"
+             x-bind:style="`height: ${Math.ceil(bookstable2.length/6) * 2}rem`">
+          <template x-for="book in bookstable2" x-key="book.book_number">
+            <button class="border text-nowrap bg-gray-800"
+                    x-bind:style="`color: ${book.book_color}`"
+                    x-text="book.short_name"
+                    x-on:click="book_number = book.book_number; books2opened = false"></button>
+          </template>
+        </div>
+      </div>
+      <div x-data="{chaptersopened: false}"
+           x-on:open-chapters.window="chaptersopened = true"
+           class="flex justify-center items-center z-[900] fixed bg-black/20 inset-0"
+           x-show="chaptersopened"
+           x-cloak>
+        <div x-on:click.outside="chaptersopened = false"
+             class="grid gap-px bg-black max-h-full max-w-full"
+             x-bind:style="`grid-template-columns: repeat(${chaptercolumns}, minmax(0, 1fr)); width: ${chaptercolumns*3}rem`">
+          <template x-for="chap in maxchapter" x-key="chap">
+            <button class="font-bold text-nowrap aspect-square text-white bg-gray-600"
+                    x-bind:class="chap == chapter ? 'bg-gray-600': 'bg-gray-800'"
+                    x-text="chap"
+                    x-on:click="chapter = chap; chaptersopened = false"></button>
+          </template>
+        </div>
+      </div>
+      <div x-data="{modulesmenuopened: false,}"
+           x-on:toggle-modules.window="modulesmenuopened = !modulesmenuopened"
+           class="flex bg-black/20 z-[900] justify-center items-center fixed flex-wrap inset-0"
+           x-show="modulesmenuopened"
+           x-cloak>
+        <div x-on:click.outside="modulesmenuopened = false"
+             class="max-h-full max-w-full grid grid-cols-1 bg-black gap-px"
+             x-bind:style="`height: ${modules.length * 2}rem`">
+          <template x-for="singlemodule in modules" x-key="singlemodule.name">
+            <button class="flex items-center px-3 text-left bg-gray-800"
+                    x-show="singlemodule.name != module && singlemodule.name != module2"
+                    x-on:click="module = singlemodule.name ; modulesmenuopened = false">
+              <span class="!w-20" x-text="singlemodule.name"></span>
+              <span x-text="singlemodule.description"></span>
+            </button>
+          </template>
+        </div>
+      </div>
+      <div x-data="{modules2menuopened: false}"
+           x-on:toggle-modules2.window="modules2menuopened = !modules2menuopened"
+           class="flex fixed justify-center z-[900] items-center inset-0 bg-black/20"
+           id="modules2"
+           x-show="modules2menuopened"
+           x-cloak>
+        <div x-on:click.outside="modules2menuopened = false"
+             class="grid grid-cols-1 gap-px bg-black max-w-full max-h-full"
+             x-bind:style="`height: ${modules.length * 2}rem`">
+          <template x-for="singlemodule in modules" x-key="singlemodule.name + '-2'">
+            <button class="flex items-center px-3 text-left bg-gray-800"
+                    x-show="singlemodule.name != module && singlemodule.name != module2"
+                    x-on:click="module2 = singlemodule.name ; modules2menuopened = false">
+              <span class="!w-20" x-text="singlemodule.name"></span>
+              <span x-text="singlemodule.description"></span>
+            </button>
+          </template>
+        </div>
+      </div>
+      <div x-on:changed.window="loadColumn(module, 'firstColumn'); loadColumn(module2, 'secondColumn')"
+           x-init="loadColumn(module, 'firstColumn'); loadColumn(module2, 'secondColumn')"></div>
+    </main>
+    <script>
+    let lastVerseNumber = 0;
+    const topbarBottom = document
+      .getElementById("topBar")
+      .getBoundingClientRect().bottom;
+    document.addEventListener("alpine:init", () => {
+      Alpine.data("myData", () => ({
+        module: "{{.Module}}",
+        module2: "{{.Module2}}",
+        book_number: {{.BookNumber}},
+      chapter: {{.Chapter}},
+      verseNumber: {{.Verse}},
+      firstColumn: [],
+      secondColumn: [],
+      maxColumnLength: 0,
+      bookstable: {{.BooksTable}},
+      bookstable2: {{.BooksTable2}},
+      modules: {{.Modules}},
+      chapter_string: "თავი",
+      chapter_string_ps: "ფსალმუნი",
+      maxchapter: 1,
+      chaptercolumns: 6,
+      books: {{.Books}},
+      getSquareColumns(maxItems) {
+        const squareRoot = Math.sqrt(maxItems);
+
+        const columns = Math.floor(squareRoot);
+
+        if(columns * columns === maxItems) {
+      return columns;
+    }
+
+    return columns + 1;
+        },
+    scrollIntoVerse(verse) {
+      const id =
+        "verse" +
+        "_" +
+        this.book_number +
+        "_" +
+        this.chapter +
+        "_" +
+        verse;
+      this.$nextTick(() => {
+        document.getElementById(id).scrollIntoView();
+      });
+    },
+    loadColumn(module, columnName) {
+      if (module)
+        getChapters(module, this.book_number, this.chapter)
+          .then((response) => {
+            this[columnName] =
+              response.map((item) => {
+                return item.replace(
+                  /([^><]+)<S>(\d+)<\/S>/g,
+                  "<span @click='console.log(`$2`)'>$1</span>",
+                );
+              }) || [];
+          })
+          .catch((error) => {
+            console.error("Error loading column:", error);
+            return [];
+          });
+    },
+    init() {
+      if (!this.module) this.module = "OGB";
+      this.$dispatch("getbooks");
+      this.$dispatch("getbooks2");
+
+      this.$watch("firstColumn", (value, oldValue) => {
+        if (oldValue.length == 0) {
+          this.scrollIntoVerse(this.verseNumber);
+        }
+      });
+      this.$watch("chapter", (value, oldValue) => {
+        this.verseNumber = 1;
+        if (
+          this.books.find((book) => book.book_number == this.book_number)
+            .max_chapter < value ||
+          value < 1
+        ) {
+          this.chapter = oldValue;
+        } else {
+          this.books.find(
+            (book) => book.book_number == this.book_number,
+          ).chapter = value;
+          setBookChapter(this.book_number, value);
+          this.books = this.books;
+          this.$dispatch("changed");
+        }
+      });
+      this.$watch("verseNumber", (value, oldValue) => {
+        this.books.find(
+          (book) => book.book_number == this.book_number,
+        ).verse = value;
+      });
+
+      this.$watch("module", () => {
+        this.$dispatch("module-changed");
+        this.$dispatch("changed");
+      });
+      this.$watch("module2", () => {
+        this.$dispatch("module2-changed");
+        this.scrollIntoVerse(this.verseNumber);
+        this.$dispatch("changed");
+      });
+      this.$watch("book_number", (value, oldValue) => {
+        this.chapter = this.books.find(
+          (book) => book.book_number == value,
+        ).chapter;
+        const verse = this.books.find(
+          (book) => book.book_number == value,
+        ).verse;
+        this.scrollIntoVerse(verse);
+        this.maxchapter = this.books.find(
+          (book) => book.book_number == value,
+        ).max_chapter;
+        this.chaptercolumns = this.getSquareColumns(this.maxchapter);
+        this.$dispatch("changed");
+        this.$dispatch("book-changed");
+      });
+      Alpine.effect(() => {
+        if (this.modules.length) {
+          this.$dispatch("modules-changed");
+        }
+      });
+      Alpine.effect(() => {
+        this.maxColumnLength = Math.max(
+          this.firstColumn.length || 0,
+          this.secondColumn.length || 0,
+        );
+      });
+      Alpine.effect(
+        async () => await setNumberItem("bookNumber", this.book_number),
+      );
+      Alpine.effect(
+        async () => await setNumberItem("chapter", this.chapter),
+      );
+      // Alpine.effect(
+      //   async () => await setNumberItem("verse", this.verseNumber),
+      // );
+      Alpine.effect(
+        async () => await setStringItem("module", this.module),
+      );
+      Alpine.effect(
+        async () => await setStringItem("module2", this.module2),
+      );
+      this.maxchapter = this.books.find(
+        (book) => book.book_number == this.book_number,
+      ).max_chapter;
+      this.chaptercolumns = this.getSquareColumns(this.maxchapter);
+
+      setInterval(() => {
+        if (this.verseNumber != lastVerseNumber) {
+           lastVerseNumber = this.verseNumber;
+            setBookVerse(this.book_number, this.verseNumber);
+          setNumberItem("verse", this.verseNumber);
+        }
+      }, 5000);
+    },
+      }));
+    });
+    </script>
+  </body>
+  {{.Javascript}}
+</html>
