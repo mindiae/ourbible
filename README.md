@@ -57,10 +57,6 @@ cd ourbible
 go run ./cmd/webview #or ./cmd if you want with web interface
 ```
 
-## If you want to install built binary version of windows application:
-
-just download ourbible-version.exe from releases and install it
-
 
 ## Running from web interface
 
