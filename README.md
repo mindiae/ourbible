@@ -2,14 +2,33 @@
 
 ## Installation:
 
-On ArchLinux
+On ArchLinux:
 
+```bash
+wget https://github.com/mindiae/ourbible/releases/download/version/ourbible-version-x86_64.pkg.tar.zst
+sudo pacman -U ourbible-version-x86_64.pkg.tar.zst
+```
+exact versions are in releases section
+
+
+
+On Ubuntu and Debian based systems:
+```bash
+wget https://github.com/mindiae/ourbible/releases/download/version/ourbible_version_amd64.deb
+sudo dpkg -i ourbible_version_amd64.deb
+```
+
+On windows:  
+download ourbible-vVERSION.exe from releases and install it
+
+
+Or install from aur
 ```bash
 mkdir ourbible
 cd ourbible
-wget https://github.com/mindiae/ourbible/raw/main/PKGBUILD
+wget -O PKGBUILD "https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=ourbible"
 makepkg
-sudo pacman -U ourbible-0.10.0-0-x86_64.pkg.tar.zst
+sudo pacman -U ourbible-version-x86_64.pkg.tar.zst
 ```
 
 On Windows:
