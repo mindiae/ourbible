@@ -193,6 +193,7 @@ func main() {
 	w.SetSize(800, 600, webview.HintNone)
 
 	w.Bind("getBooks", BooksHandler)
+	w.Bind("getModules", ModulesHandler)
 	w.Bind("getChapters", ChapterHandler)
 	w.Bind("setStringItem", func(key string, value string) error {
 		return SetStringItem(db, key, value)

@@ -3,7 +3,6 @@ module github.com/mindiae/ourbible
 go 1.23.1
 
 require (
-	github.com/a-h/templ v0.2.778
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/webview/webview_go v0.0.0-20240831120633-6173450d4dd6
