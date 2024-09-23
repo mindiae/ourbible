@@ -1,5 +1,12 @@
 # OurBible GUI Bible viewer Written in go and web technologies
 
+![ourbible-kjv-elb-doubleview-dark.png](https://raw.githubusercontent.com/mindiae/ourbible-pictures/refs/heads/main/ourbible-kjv-elb-doubleview-dark.png "Doubleview Dark KJV")
+
+![ourbible-kjv-singleview-dark.png](https://github.com/mindiae/ourbible-pictures/blob/main/ourbible-kjv-singleview-dark.png?raw=true "Singleview Dark KJV")
+
+![ourbible-kjv-singleview-light-booksview.png](https://github.com/mindiae/ourbible-pictures/blob/main/ourbible-kjv-singleview-light-booksview.png?raw=true "Singleview Light BooksView")
+
+
 ## Installation:
 
 On ArchLinux:
