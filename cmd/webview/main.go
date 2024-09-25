@@ -151,6 +151,9 @@ func main() {
 
 	booksTable2Json, _ := json.Marshal(booksTable2)
 
+	style := "<style>" + string(bibleviewer) + string(fontawesome) + "</style>"
+	script := "<script>" + string(alpineSwipe) + string(alpine) + "</script>"
+
 	data := struct {
 		Style            string
 		Javascript       string
@@ -166,8 +169,8 @@ func main() {
 		BooksTable       string
 		BooksTable2      string
 	}{
-		Style:            "<style>" + string(bibleviewer) + string(fontawesome) + "</style>",
-		Javascript:       "<script>" + string(alpineSwipe) + string(alpine) + "</script>",
+		Style:            style,
+		Javascript:       script,
 		Module:           strings["module"],
 		Module2:          strings["module2"],
 		BookNumber:       ints["bookNumber"],

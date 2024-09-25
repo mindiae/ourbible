@@ -66,3 +66,6 @@
 .fa-desktop::before {
   content: "\f390";
 }
+.fa-ellipsis-vertical::before {
+  content: "\f142";
+}

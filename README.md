@@ -7,6 +7,9 @@
 ![ourbible-kjv-singleview-light-booksview.png](https://github.com/mindiae/ourbible-pictures/blob/main/ourbible-kjv-singleview-light-booksview.png?raw=true "Singleview Light BooksView")
 
 
+If you want to test application without installing it, first you need to install provided font-awesome fonts to your system
+
+
 ## Installation:
 
 On ArchLinux:
