@@ -26,10 +26,6 @@
   float: left;
 }
 
-.m-0 {
-  margin: 0px;
-}
-
 .mt-10 {
   margin-top: 2.5rem;
 }
@@ -52,10 +48,6 @@
 
 .h-8 {
   height: 2rem;
-}
-
-.h-\[calc\(100vh-2rem\)\] {
-  height: calc(100vh - 2rem);
 }
 
 .max-h-full {
@@ -108,10 +100,6 @@
 
 .gap-px {
   gap: 1px;
-}
-
-.overflow-y-auto {
-  overflow-y: auto;
 }
 
 .text-wrap {

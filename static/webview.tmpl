@@ -9,9 +9,7 @@
         x-bind:class="{'dark': darkMode}"
         x-init=" Alpine.effect(async () => { await setNumberItem('isSystemDarkMode', isSystemDarkMode ? 1 : 0); }); Alpine.effect(async ()=> { if (!isSystemDarkMode){ await setNumberItem('darkMode', darkMode ? 1 : 0); } })"
         class="dark:text-white dark:bg-[#222222] m-0">
-    <main style="max-width: 70rem;
-                 margin-inline: auto"
-          class="[&_button]:font-sans [&_button]:text-white [&_button]:border-none font-sans"
+    <main class="[&_button]:font-sans [&_button]:text-white [&_button]:border-none font-sans"
           x-data="myData"
           x-swipe:left.threshold.100px="chapter++; document.getElementById('contentTop').scrollIntoView()"
           x-swipe:right.threshold.100px="chapter--; document.getElementById('contentTop').scrollIntoView()"
