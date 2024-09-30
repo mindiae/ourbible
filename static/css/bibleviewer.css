@@ -26,8 +26,8 @@
   float: left;
 }
 
-.mt-10 {
-  margin-top: 2.5rem;
+.m-0 {
+  margin: 0px;
 }
 
 .\!flex {
@@ -48,6 +48,10 @@
 
 .h-8 {
   height: 2rem;
+}
+
+.h-\[calc\(100vh-2rem\)\] {
+  height: calc(100vh - 2rem);
 }
 
 .max-h-full {
@@ -100,6 +104,10 @@
 
 .gap-px {
   gap: 1px;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
 }
 
 .text-wrap {

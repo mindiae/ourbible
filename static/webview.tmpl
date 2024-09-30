@@ -13,8 +13,8 @@
           x-data="myData"
           x-swipe:left.threshold.100px="chapter++; document.getElementById('contentTop').scrollIntoView()"
           x-swipe:right.threshold.100px="chapter--; document.getElementById('contentTop').scrollIntoView()"
-      x-on:keyup.up.window="if(verseNumber > 1){document.getElementById('verse' + '_' + book_number + '_' + chapter + '_' + (verseNumber - 1)).scrollIntoView(); verseNumber--}"
-      x-on:keyup.down.window="if(verseNumber < maxColumnLength){document.getElementById('verse' + '_' + book_number + '_' + chapter + '_' + (verseNumber + 1)).scrollIntoView() ; verseNumber++}">
+          x-on:keyup.up.window="if(verseNumber > 1){document.getElementById('verse' + '_' + book_number + '_' + chapter + '_' + (verseNumber - 1)).scrollIntoView(); verseNumber--}"
+          x-on:keyup.down.window="if(verseNumber < maxColumnLength){document.getElementById('verse' + '_' + book_number + '_' + chapter + '_' + (verseNumber + 1)).scrollIntoView() ; verseNumber++}">
       <div class="sticky z-[98] top-0">
         <div id="topBar" class="!flex gap-px !justify-between flex-wrap bg-black">
           <div class="!flex gap-px h-8">
