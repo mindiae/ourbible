@@ -1,4 +1,4 @@
-# OurBible GUI Bible viewer Written in go and web technologies
+# OurBible GUI Bible viewer Written in go and web technologies, ქართული ბიბლია აპლიკაცია ვინდოუსისთვის და ლინუქსისთვის
 
 ![ourbible-kjv-elb-doubleview-dark.png](https://raw.githubusercontent.com/mindiae/ourbible-pictures/refs/heads/main/ourbible-kjv-elb-doubleview-dark.png "Doubleview Dark KJV")
 
