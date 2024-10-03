@@ -8,11 +8,11 @@
 }
 
 .fas::before,
-.far::before{
+.far::before {
   display: inline-block;
-    width: 1em;
-    height: 1em;
-    vertical-align:text-top;
+  width: 1em;
+  height: 1em;
+  vertical-align: text-top;
 }
 
 .fa-arrow-left::before {
