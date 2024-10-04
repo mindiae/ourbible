@@ -1,0 +1,6 @@
+Package: ourbible
+Version: 0.21.01
+Maintainer: Mindia Edisherashvili <mindiae@aol.com>
+Architecture: amd64
+Depends: libgtk-3-0, libwebkit2gtk-4.1-0
+Description: Bible reader application that uses MyBible android app's modules
