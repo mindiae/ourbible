@@ -52,7 +52,12 @@
             <button
               class="bg-gray-800 px-3 !py-[unset] font-bold"
               x-on:click="$dispatch('toggle-books')"
-              x-text="`${bookstable?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}:${verseNumber}`"
+              x-text="`${bookstable?.find(book =>book.book_number == book_number)?.short_name||book_number}`"
+            ></button>
+            <button
+              class="bg-gray-800 px-3 !py-[unset] font-bold"
+              x-on:click="$dispatch('toggle-chapters')"
+              x-text="`${chapter}:${verseNumber}`"
             ></button>
             <button
               class="bg-gray-800 px-3 !py-[unset] flex items-center justify-center"
@@ -164,14 +169,13 @@
               <button
                 class="bg-gray-800 !py-[unset] px-3 font-bold"
                 x-on:click="$dispatch('toggle-books2')"
-                x-text="`${bookstable2?.find(book =>book.book_number == book_number)?.short_name||book_number} ${chapter}`"
+                x-text="`${bookstable2?.find(book =>book.book_number == book_number)?.short_name||book_number}`"
               ></button>
             </div>
           </template>
         </div>
         <div
           x-data="{booksopened: false}"
-          x-init="$watch('booksopened', value=>{ if (!value){ $dispatch('open-chapters') } })"
           x-on:toggle-books.window="booksopened = !booksopened"
           x-on:module-changed.window="bookstable = await getBooks(module)"
           class="absolute z-[900]"
@@ -198,7 +202,6 @@
         <div
           x-data="{books2opened: false}"
           x-on:toggle-books2.window="books2opened = !books2opened"
-          x-init="$watch('books2opened', value=>{ if (!value){ $dispatch('open-chapters') } })"
           x-on:module2-changed.window="bookstable2 = module2 ? await getBooks(module2) : []"
           class="absolute z-[900]"
           x-show="books2opened"
@@ -223,7 +226,7 @@
         </div>
         <div
           x-data="{chaptersopened: false}"
-          x-on:open-chapters.window="chaptersopened = true"
+          x-on:toggle-chapters.window="chaptersopened = !chaptersopened"
           class="absolute z-[900]"
           x-show="chaptersopened"
           x-cloak
