@@ -19,7 +19,7 @@ type Book struct {
 func BooksHandler(module string) ([]Book, error) {
 	file := filepath.Join(APP_ROOT, "database", fmt.Sprintf("%s.SQLite3", module))
 	if !fileExists(file) {
-		file = filepath.Join(configPath, "database", fmt.Sprintf("%s.SQLite3", module))
+		file = filepath.Join(configPath, fmt.Sprintf("%s.SQLite3", module))
 		if !fileExists(file) {
 			return []Book{}, errors.New("file " + module + ".SQLite3" + " does not exist")
 		}

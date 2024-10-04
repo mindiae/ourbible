@@ -16,7 +16,7 @@ type Verse struct {
 func ChapterHandler(module string, bookNumber int16, chapter int16) ([]string, error) {
 	file := filepath.Join(APP_ROOT, "database", fmt.Sprintf("%s.SQLite3", module))
 	if !fileExists(file) {
-		file = filepath.Join(configPath, "database", fmt.Sprintf("%s.SQLite3", module))
+		file = filepath.Join(configPath, fmt.Sprintf("%s.SQLite3", module))
 		if !fileExists(file) {
 			return []string{}, errors.New("file " + module + ".SQLite3" + " does not exist")
 		}

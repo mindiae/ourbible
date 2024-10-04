@@ -16,7 +16,7 @@ type InfoRow struct {
 
 func ModulesHandler() ([]map[string]string, error) {
 	internalDbDir := filepath.Join(APP_ROOT, "database")
-	configDbDir := filepath.Join(configPath, "database")
+	configDbDir := configPath
 
 	var emptyReturnValue []map[string]string
 	var modules []map[string]string
@@ -66,7 +66,7 @@ func ModulesHandler() ([]map[string]string, error) {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() {
+		if filepath.Ext(info.Name()) == ".SQLite3" {
 			moduleName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
 			db, err := sql.Open("sqlite3", path)
 			if err != nil {
