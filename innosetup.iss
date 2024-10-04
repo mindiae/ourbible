@@ -1,6 +1,6 @@
 [Setup]
 AppName=OurBible
-AppVersion=0.21.5
+AppVersion=0.22.5
 WizardStyle=modern
 DefaultDirName={autopf}\OurBible
 DefaultGroupName=OurBible
