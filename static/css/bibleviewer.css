@@ -75,10 +75,6 @@
   height: 2rem;
 }
 
-.h-\[calc\(100vh-2rem\)\] {
-  height: calc(100vh - 2rem);
-}
-
 .h-full {
   height: 100%;
 }
