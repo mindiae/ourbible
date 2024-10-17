@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script defer src="js/alpinejs-swipe.js"></script>
+    <script defer src="js/persist.js"></script>
+    <script defer src="js/alpine.js"></script>
+    <title></title>
+    <link href="css/bibleviewer.css" rel="stylesheet" />
+  </head>
+  <body
+    x-data="{
+    darkMode: $persist(window.matchMedia('(prefers-color-scheme: dark)').matches),
+    isSystemDarkMode: $persist(true),
+    biblePaneTop: document.getElementById('search').getBoundingClientRect().top,
+    module: $persist('OGB'),
+    book_number: $persist(470),
+    chapter: $persist(1),
+    verseNumber: $persist(1),
+    books: []
+    }"
+    x-init="getBooks(module).then((response)=>books = response)"
+    x-bind:class="{'dark': darkMode}"
+    class="dark:text-white dark:bg-[#222222] m-0"
+  >
+    <main
+      class="[&_button]:font-sans [&_button]:text-white [&_button]:border-none font-sans"
+    >
+      <div
+        id="topBar"
+        class="!flex gap-px !justify-between bg-black max-w-screen overflow-x-auto flex-wrap"
+      >
+        <div class="!flex gap-px h-8">
+          <button
+            class="bg-gray-800 px-3 !py-[unset] font-bold"
+            x-on:click="navigateTo('bibleviewer')"
+          >
+            <svg
+              class="w-4 h-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+            >
+              <path
+                fill="white"
+                d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
+              />
+            </svg>
+          </button>
+          <input
+            type="text"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-0 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-0 dark:focus:border-blue-500"
+            x-bind:placeholder="`Search in ${module}`"
+            autocomplete="off"
+            type="text"
+          />
+          <button class="bg-gray-800 px-3 !py-[unset] font-bold"></button>
+        </div>
+      </div>
+      <section
+        id="search"
+        x-bind:style="`height: calc(100vh - ${biblePaneTop}px);`"
+        class="overflow-y-auto px-3 text-xl [&_t]:block [&_t]:ms-[5%] [&_e]:font-bold [&_m]:hidden [&_s]:hidden [&_j]:dark:text-red-500 [&_j]:text-red-800 [&_j]:!inline"
+        x-on:scroll="biblePaneTop = $el.getBoundingClientRect().top;"
+      ></section>
+    </main>
+  </body>
+</html>

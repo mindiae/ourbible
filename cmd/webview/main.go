@@ -50,6 +50,10 @@ func fileExists(path string) bool {
 	return !os.IsNotExist(err)
 }
 
+func navigateTo(w webview.WebView, appFullPath string, path string) {
+	w.Navigate("file://" + filepath.Join(appFullPath, "static", path+".html"))
+}
+
 func main() {
 	executablePath, err := os.Executable()
 	if err != nil {
@@ -65,10 +69,6 @@ func main() {
 	w.SetTitle("OurBible")
 	w.SetSize(800, 600, webview.HintNone)
 
-	w.Bind("getBooks", BooksHandler)
-	w.Bind("getModules", ModulesHandler)
-	w.Bind("getChapters", ChapterHandler)
-
 	cwd, err := os.Getwd()
 	if err != nil {
 		fmt.Print(err)
@@ -80,7 +80,15 @@ func main() {
 	} else {
 		appFullPath = APP_ROOT
 	}
-	w.Navigate("file://" + filepath.Join(appFullPath, "static/webview.html"))
+	w.Bind("getBooks", BooksHandler)
+	w.Bind("getModules", ModulesHandler)
+	w.Bind("getBook", BookHandler)
+	w.Bind("getBothBooks", BothBookHandler)
+	w.Bind("navigateTo", func(path string) error {
+		navigateTo(w, appFullPath, path)
+		return nil
+	})
+	navigateTo(w, appFullPath, "bibleviewer")
 
 	w.Run()
 }
