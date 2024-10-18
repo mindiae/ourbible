@@ -2,4 +2,4 @@
 build/*
 output/
 !build/README.md
-database/
+/database
