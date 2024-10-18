@@ -14,7 +14,7 @@ sha256sums=("638ef6c6ba8e4fdbec6e7c6423ce93d65091e05ece08225f48ee9ecf32511358")
 
 build() {
   cd "$srcdir/$pkgname-$pkgver"
-  go build -o build/$pkgname ./cmd/webview/
+  go build -o build/$pkgname ./cmd/
 }
 
 package() {

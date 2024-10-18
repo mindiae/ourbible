@@ -1,14 +1,12 @@
 package main
 
 import (
-	"database/sql"
-	"net/http"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/labstack/echo/v4"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/bvinc/go-sqlite-lite/sqlite3"
 )
 
 type InfoRow struct {
@@ -16,51 +14,100 @@ type InfoRow struct {
 	Value string `json:"value"`
 }
 
-func ModulesHandler(c echo.Context) error {
-	directoryPath := filepath.Join(APP_ROOT, "database")
+func ModulesHandler() ([]map[string]string, error) {
+	internalDbDir := filepath.Join(APP_ROOT, "database")
+	configDbDir := configPath
 
+	var emptyReturnValue []map[string]string
 	var modules []map[string]string
 
-	err := filepath.Walk(directoryPath, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(internalDbDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if !info.IsDir() {
 			moduleName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
-			db, err := sql.Open("sqlite3", path)
+			db, err := sqlite3.Open(path)
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+				return err
 			}
 			defer db.Close()
 
-			rows, err := db.Query("SELECT * FROM info WHERE name != 'history_of_changes' ")
+			rows, err := db.Prepare("SELECT * FROM info WHERE name != 'history_of_changes' ")
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+				return err
 			}
 			defer rows.Close()
 
 			info := make(map[string]string)
 
-			for rows.Next() {
+			for {
+				hasRow, err := rows.Step()
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				if !hasRow {
+					break
+				}
 				var infoRow InfoRow
 				if err := rows.Scan(&infoRow.Name, &infoRow.Value); err != nil {
-					return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+					return err
 				}
 				info[infoRow.Name] = infoRow.Value
 			}
 			info["name"] = moduleName
-
-			if err := rows.Err(); err != nil {
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-			}
 
 			modules = append(modules, info)
 		}
 		return nil
 	})
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error reading directory"})
+		return emptyReturnValue, err
 	}
 
-	return c.JSON(http.StatusOK, modules)
+	err = filepath.Walk(configDbDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if filepath.Ext(info.Name()) == ".SQLite3" {
+			moduleName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
+			db, err := sqlite3.Open(path)
+			if err != nil {
+				return err
+			}
+			defer db.Close()
+
+			rows, err := db.Prepare("SELECT * FROM info WHERE name != 'history_of_changes' ")
+			if err != nil {
+				return err
+			}
+			defer rows.Close()
+
+			info := make(map[string]string)
+
+			for {
+				hasRow, err := rows.Step()
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				if !hasRow {
+					break
+				}
+				var infoRow InfoRow
+				if err := rows.Scan(&infoRow.Name, &infoRow.Value); err != nil {
+					return err
+				}
+				info[infoRow.Name] = infoRow.Value
+			}
+			info["name"] = moduleName
+
+			modules = append(modules, info)
+		}
+		return nil
+	})
+	if err != nil {
+		return emptyReturnValue, err
+	}
+
+	return modules, nil
 }
