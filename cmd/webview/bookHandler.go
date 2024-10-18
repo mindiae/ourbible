@@ -1,13 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/bvinc/go-sqlite-lite/sqlite3"
 )
 
 func BookHandler(module string, bookNumber int) (string, error) {
@@ -21,13 +21,13 @@ func BookHandler(module string, bookNumber int) (string, error) {
 
 	var book string
 
-	db, err := sql.Open("sqlite3", file)
+	db, err := sqlite3.Open(file)
 	if err != nil {
 		return "", err
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT  chapter, verse, text FROM verses WHERE book_number = ? ", bookNumber)
+	rows, err := db.Prepare("SELECT  chapter, verse, text FROM verses WHERE book_number = ? ", bookNumber)
 	if err != nil {
 		return "", err
 	}
@@ -35,7 +35,14 @@ func BookHandler(module string, bookNumber int) (string, error) {
 	re := regexp.MustCompile(`(?P<word>[^><]+)<S>(?P<strong>\d+)<\/S>`)
 
 	var lastVerse int
-	for rows.Next() {
+	for {
+		hasRow, err := rows.Step()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		if !hasRow {
+			break
+		}
 		var chapter int
 		var verse int
 		var text string
@@ -61,9 +68,6 @@ func BookHandler(module string, bookNumber int) (string, error) {
       </div>
       </div>`, verse, re.ReplaceAllString(text, `<span @click='S("${strong}")'>${word}</span>`))
 		lastVerse = verse
-	}
-	if err := rows.Err(); err != nil {
-		return "", err
 	}
 
 	return book, nil

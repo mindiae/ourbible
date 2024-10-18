@@ -1,13 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/bvinc/go-sqlite-lite/sqlite3"
 )
 
 func BothBookHandler(module string, module2 string, bookNumber int) (string, error) {
@@ -28,19 +28,19 @@ func BothBookHandler(module string, module2 string, bookNumber int) (string, err
 
 	var book string
 
-	db, err := sql.Open("sqlite3", file)
+	db, err := sqlite3.Open(file)
 	if err != nil {
 		return "", err
 	}
 	defer db.Close()
 
 	attachQuery := fmt.Sprintf("ATTACH DATABASE '%s' AS db2", file2)
-	_, err = db.Exec(attachQuery)
+	err = db.Exec(attachQuery)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	rows, err := db.Query(`
+	rows, err := db.Prepare(`
     SELECT a.chapter, a.verse, a.text, b.text
         FROM verses AS a 
         INNER JOIN db2.verses AS b
@@ -52,10 +52,18 @@ func BothBookHandler(module string, module2 string, bookNumber int) (string, err
 		return "", err
 	}
 	defer rows.Close()
-	// re := regexp.MustCompile(`(?P<word>[^><]+)<S>(?P<strong>\d+)<\/S>`)
+	re := regexp.MustCompile(`(?P<word>[^><]+)<S>(?P<strong>\d+)<\/S>`)
 
 	var lastVerse int
-	for rows.Next() {
+
+	for {
+		hasRow, err := rows.Step()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		if !hasRow {
+			break
+		}
 		var chapter int
 		var verse int
 		var text string
@@ -93,10 +101,7 @@ func BothBookHandler(module string, module2 string, bookNumber int) (string, err
       `, verse, text, text2)
 		lastVerse = verse
 	}
-	if err := rows.Err(); err != nil {
-		return "", err
-	}
 
-	// return re.ReplaceAllString(book, `<span @click='S("${strong}")'>${word}</span>`), nil
-	return book, nil
+	return re.ReplaceAllString(book, `<span @click='S("${strong}")'>${word}</span>`), nil
+	// return book, nil
 }

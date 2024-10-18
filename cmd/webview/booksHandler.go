@@ -1,16 +1,16 @@
 package main
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/bvinc/go-sqlite-lite/sqlite3"
 )
 
 type Book struct {
-	BookNumber int16  `json:"book_number"`
+	BookNumber int    `json:"book_number"`
 	BookColor  string `json:"book_color"`
 	ShortName  string `json:"short_name"`
 	LongName   string `json:"long_name"`
@@ -26,13 +26,13 @@ func BooksHandler(module string) ([]Book, error) {
 	}
 	var emptyReturnValue []Book
 
-	db, err := sql.Open("sqlite3", file)
+	db, err := sqlite3.Open(file)
 	if err != nil {
 		return emptyReturnValue, err
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT book_color, book_number, short_name, long_name FROM books")
+	rows, err := db.Prepare("SELECT book_color, book_number, short_name, long_name FROM books")
 	if err != nil {
 		return emptyReturnValue, err
 	}
@@ -40,16 +40,19 @@ func BooksHandler(module string) ([]Book, error) {
 
 	var books []Book
 
-	for rows.Next() {
+	for {
+		hasRow, err := rows.Step()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		if !hasRow {
+			break
+		}
 		var book Book
 		if err := rows.Scan(&book.BookColor, &book.BookNumber, &book.ShortName, &book.LongName); err != nil {
 			return emptyReturnValue, err
 		}
 		books = append(books, book)
-	}
-
-	if err := rows.Err(); err != nil {
-		return emptyReturnValue, err
 	}
 
 	return books, nil

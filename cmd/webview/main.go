@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"runtime"
 
-	_ "github.com/mattn/go-sqlite3"
 	webview "github.com/webview/webview_go"
 )
 

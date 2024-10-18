@@ -6,3 +6,4 @@ static/bible-json/*
 !static/bible-json/README.md
 node_modules/
 pnpm-lock.yaml
+database/

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"database/sql"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/bvinc/go-sqlite-lite/sqlite3"
 )
 
 type InfoRow struct {
@@ -27,13 +27,13 @@ func ModulesHandler() ([]map[string]string, error) {
 		}
 		if !info.IsDir() {
 			moduleName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
-			db, err := sql.Open("sqlite3", path)
+			db, err := sqlite3.Open(path)
 			if err != nil {
 				return err
 			}
 			defer db.Close()
 
-			rows, err := db.Query("SELECT * FROM info WHERE name != 'history_of_changes' ")
+			rows, err := db.Prepare("SELECT * FROM info WHERE name != 'history_of_changes' ")
 			if err != nil {
 				return err
 			}
@@ -41,7 +41,14 @@ func ModulesHandler() ([]map[string]string, error) {
 
 			info := make(map[string]string)
 
-			for rows.Next() {
+			for {
+				hasRow, err := rows.Step()
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				if !hasRow {
+					break
+				}
 				var infoRow InfoRow
 				if err := rows.Scan(&infoRow.Name, &infoRow.Value); err != nil {
 					return err
@@ -49,10 +56,6 @@ func ModulesHandler() ([]map[string]string, error) {
 				info[infoRow.Name] = infoRow.Value
 			}
 			info["name"] = moduleName
-
-			if err := rows.Err(); err != nil {
-				return err
-			}
 
 			modules = append(modules, info)
 		}
@@ -68,13 +71,13 @@ func ModulesHandler() ([]map[string]string, error) {
 		}
 		if filepath.Ext(info.Name()) == ".SQLite3" {
 			moduleName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
-			db, err := sql.Open("sqlite3", path)
+			db, err := sqlite3.Open(path)
 			if err != nil {
 				return err
 			}
 			defer db.Close()
 
-			rows, err := db.Query("SELECT * FROM info WHERE name != 'history_of_changes' ")
+			rows, err := db.Prepare("SELECT * FROM info WHERE name != 'history_of_changes' ")
 			if err != nil {
 				return err
 			}
@@ -82,7 +85,14 @@ func ModulesHandler() ([]map[string]string, error) {
 
 			info := make(map[string]string)
 
-			for rows.Next() {
+			for {
+				hasRow, err := rows.Step()
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				if !hasRow {
+					break
+				}
 				var infoRow InfoRow
 				if err := rows.Scan(&infoRow.Name, &infoRow.Value); err != nil {
 					return err
@@ -90,10 +100,6 @@ func ModulesHandler() ([]map[string]string, error) {
 				info[infoRow.Name] = infoRow.Value
 			}
 			info["name"] = moduleName
-
-			if err := rows.Err(); err != nil {
-				return err
-			}
 
 			modules = append(modules, info)
 		}
