@@ -3,3 +3,4 @@ build/*
 output/
 !build/README.md
 /database
+static/js

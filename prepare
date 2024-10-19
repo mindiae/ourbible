@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+wget https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.js -O static/js/alpine.js
+wget https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.14.3/dist/cdn.js -O static/js/persist.js
+wget https://unpkg.com/alpinejs-swipe@1.0.2/dist/cjs.js -O static/js/alpinejs-swipe.js
+wget https://github.com/mindiae/ourbible/releases/download/0.22.5/database.tar.gz
+tar -xf database.tar.gz
+rm database.tar.gz
