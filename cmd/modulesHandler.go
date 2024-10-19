@@ -25,7 +25,7 @@ func ModulesHandler() ([]map[string]string, error) {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() {
+		if filepath.Ext(info.Name()) == ".SQLite3" {
 			moduleName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
 			db, err := sqlite3.Open(path)
 			if err != nil {
