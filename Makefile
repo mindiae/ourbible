@@ -25,7 +25,7 @@ build:
 # Install target
 .PHONY: install
 install: build
-	install -m 755 build/$(BINARY_NAME) $(PREFIX)/bin/
+	install -m 755 build/$(BINARY_NAME) $(BASEDIR)$(PREFIX)/bin/
 	install -m 755 build/$(BINARY_NAME) $(BASEDIR)/$(PREFIX)/bin/$(BINARY_NAME)
 	install -d $(BASEDIR)/usr/share/applications
 	install -d $(BASEDIR)/$(PREFIX)/$(BINARY_NAME)/static
