@@ -30,8 +30,8 @@ install: build
 	install -d $(BASEDIR)/usr/share/applications
 	install -d $(BASEDIR)$(PREFIX)/$(BINARY_NAME)/static
 	install -d $(BASEDIR)$(PREFIX)/$(BINARY_NAME)/database
-	mv "static/"* $(BASEDIR)$(PREFIX)/$(BINARY_NAME)/static
-	mv "database/"* $(BASEDIR)$(PREFIX)/$(BINARY_NAME)/database
+	mv static/* $(BASEDIR)$(PREFIX)/$(BINARY_NAME)/static
+	mv database/* $(BASEDIR)$(PREFIX)/$(BINARY_NAME)/database
 	mv "$(BINARY_NAME).desktop" $(BASEDIR)/usr/share/applications
 
 # Clean target
