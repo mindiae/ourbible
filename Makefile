@@ -6,8 +6,8 @@ PREFIX ?= /usr/local
 
 # Check the operating system
 ifeq ($(OS),Windows_NT)
-    BINARY_NAME=$(BINARY_NAME).exe
-    BUILD_COMMAND=go build -o build/$(BINARY_NAME) -ldflags "-H=windowsgui" ./cmd
+    NAME=$(BINARY_NAME).exe
+    BUILD_COMMAND=go build -o build/$(NAME) -ldflags "-H=windowsgui" ./cmd
 else
     BUILD_COMMAND=go build -o build/$(BINARY_NAME) ./cmd
 endif
